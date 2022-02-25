@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,10 +13,11 @@
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #f5f5f5;
+            background-color: #000;
             margin: 0px;
-            color: #000;
+            color: #fff;
         }
+
         .card {
             position: fixed;
             background-image: url(https://source.unsplash.com/700x1624);
@@ -25,59 +27,93 @@
             display: flex;
             flex-direction: column;
             padding: 40px 0 0 30px;
+
+            text-shadow: rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) 0.540302px 0.841471px 0px, rgb(0, 0, 0) -0.416147px 0.909297px 0px, rgb(0, 0, 0) -0.989992px 0.14112px 0px, rgb(0, 0, 0) -0.653644px -0.756802px 0px, rgb(0, 0, 0) 0.283662px -0.958924px 0px, rgb(0, 0, 0) 0.96017px -0.279415px 0px;
         }
+
+        .card-content+.card-content {
+            margin-top: 20px;
+        }
+
         .headline {
             font-size: 26vw;
             font-weight: 100;
-            text-shadow: white 3px 3px;
         }
+
         .ticker {
             padding: 0 0 0 4px;
-            text-shadow: white 2px 2px;
         }
+
         .spacing {
             letter-spacing: 4px;
         }
     </style>
 
 </head>
+
 <body>
 
-<script>
-let usd, yandex;
+    <div class="card">
+        <div class="card-content" id="card-nasdaq">
+            <div class="ticker">YNDX</div>
+            <div class="headline"></div>
+        </div>
 
-fetch('https://www.cbr-xml-daily.ru/daily_json.js')
-    .then(response => response.json())
-    .then(rates => {
-            console.log(rates.Valute.USD)
-            usd = rates.Valute.USD.Value
-        }
-    );
+        <div class="card-content" id="card-moex">
+            <div class="ticker">YNDX (MOEX)</div>
+            <div class="headline"></div>
+        </div>
 
-fetch('https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=YNDX&interval=5min&apikey=1QTGAEJ58CP0B4J9')
-    .then(response => response.json())
-    .then(stock => {
-            let Stocks = Object.keys(stock["Time Series (5min)"]).map(function(key) { return stock["Time Series (5min)"][key]; })
-            console.log(Stocks[0]["4. close"])
-            yandex = Stocks[0]["4. close"]
-            let changer = yandex - Stocks[1]["4. close"]
-            let arrow = null
-            changer > 0 ? arrow = '↑' : arrow = '↓'
-            document.querySelector('.ticker').innerHTML = '<span class="spacing">YNDX</span> ––  <span class="spacing">$' + yandex + arrow + '</span>'
-        }
-    )
-    .then(final => {
-            console.log('Стоимость акций Яндекса:', Math.round(usd*yandex) + '₽')
-            document.querySelector('.headline').innerHTML = Math.round(usd*yandex) + '<span style="font-weight: 100">₽</span>'
-        }
-    )
-</script>
-
-<div class="card">
-    <div class="ticker">YNDX</div>
-    <div class="headline"><img src="i/loader.svg" style="position: absolute;top: 90px;left: 22px;"></div>
-</div>
+        <div class="card-content" id="card-forex">
+            <div class="ticker">USD/RUB</div>
+            <div class="headline"></div>
+        </div>
+    </div>
 
 </body>
-</html>
 
+<script type="text/javascript">
+
+    const api_keys = [
+        'ucNm3Bv41T4cZXmGpvvZjdBoC69664k6oKqaTmX2',
+        'qoAwPkv9sG3LjOcyD3P54tcLUwV1SkyHsuUzK5e0',
+        'kGti1FE2Fy9QeBcFtfcDU6rOYYdgWA6P4lLglJkv',
+    ];
+
+    fetch('https://yfapi.net/v6/finance/quote?region=RU&lang=RU&symbols=YNDX%2CYNDX.ME%2CUSDRUB%3DX', {
+        method: 'GET',
+        headers: {
+            'X-API-KEY': api_keys[Math.round(Math.random() * api_keys.length - 1)]
+        }
+    }).then(r => r.json()).then(data => {
+        const nasdaq = data.quoteResponse.result[0];
+        const moex = data.quoteResponse.result[1];
+        const forex = data.quoteResponse.result[2];
+
+        const yndx = nasdaq.regularMarketPrice;
+        const yndxMe = moex.regularMarketPrice;
+        const usd = forex.regularMarketPrice;
+
+        // nasdaq
+        let nasdaqArrow = nasdaq.regularMarketChange > 0 ? '↑' : '↓';
+        let nasdaqPostfix = (nasdaq.regularMarketChange > 0 ? '+' : '') + nasdaq.regularMarketChange.toFixed(2).toString().replace('-', '−');
+        document.querySelector('#card-nasdaq .ticker').innerHTML = `<span class="spacing">YNDX</span> —  <span class="spacing">$${nasdaq.regularMarketPrice + nasdaqArrow}, ${nasdaqPostfix}</span>`;
+        document.querySelector('#card-nasdaq .headline').innerHTML = Math.round(usd * yndx) + '<span style="font-weight: 100">₽</span>'
+
+        // moex
+        let moexArrow = moex.regularMarketChange > 0 ? '↑' : '↓';
+        let moexPostfix = (moex.regularMarketChange > 0 ? '+' : '') + moex.regularMarketChange.toFixed(2).toString().replace('-', '−');
+        document.querySelector('#card-moex .ticker').innerHTML = `<span class="spacing">YNDX (MOEX)</span> —  <span class="spacing">${moex.regularMarketPrice + moexArrow}₽, ${moexPostfix}</span>`;
+        document.querySelector('#card-moex .headline').innerHTML = (yndxMe / usd).toFixed(2) + '<span style="font-weight: 100">$</span>'
+
+        // usdrub
+        let forexArrow = forex.regularMarketChange > 0 ? '↑' : '↓';
+        let forexPostfix = (forex.regularMarketChange > 0 ? '+' : '') + forex.regularMarketChange.toFixed(2).toString().replace('-', '−');
+        document.querySelector('#card-forex .ticker').innerHTML = `<span class="spacing">USD/RUB</span> —  <span class="spacing">$${forex.regularMarketPrice + forexArrow}, ${forexPostfix}</span>`;
+    }).catch(e => {
+        console.error(e);
+    });
+
+</script>
+
+</html>
