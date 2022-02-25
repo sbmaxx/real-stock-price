@@ -16,7 +16,8 @@
             background-color: #000;
             margin: 0px;
             color: #fff;
-            background-image: url(https://source.unsplash.com/1920x1080);
+            transition: background-image 3s;
+            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII=);
             background-attachment: fixed;
             background-size: cover;
             width: 100%;
@@ -32,7 +33,7 @@
             width: 100%;
             flex-direction: column;
             justify-content: flex-end;
-            padding: 60px 0 10px 10px;
+            padding: 60px 10px 10px 10px;
             bottom: 0;
             position: absolute;
         }
@@ -43,7 +44,7 @@
 
         .headline {
             font-size: 18vh;
-            font-weight: 100;
+            font-weight: 200;
         }
 
         .change,
@@ -51,6 +52,7 @@
             font-size: 6vw;
             padding-left: 10px;
             line-height: 8vw;
+            font-weight: 200;
         }
 
         .ticker {
@@ -65,13 +67,21 @@
             cursor: pointer;
         }
 
-        @media (min-width: 320px) and (max-width:768px) {
-            body {
-                background-image: url(https://source.unsplash.com/700x1624);
-            }
+        .red {
+            color: #db5856;
+        }
 
+        .green {
+            color: #77dd77;
+        }
+
+        @media (max-width:768px) {
             .headline {
                 font-size: 16vw;
+            }
+
+            .change {
+                font-weight: 300;
             }
         }
     </style>
@@ -79,24 +89,26 @@
 </head>
 
 <body>
+
     <!--
     <div class="card">
         <div class="card-content" id="card-nasdaq">
             <div class="ticker"><span class="spacing">YNDX</span></div>
-            <div class="headline"><span class="spacing price">$20.25↓</span><span class="change">−0.07</span></div>
+            <div class="headline"><span class="spacing price">$20.25</span><span class="change red">−0.07</span></div>
         </div>
 
         <div class="card-content" id="card-moex">
             <div class="ticker">YNDX (MOEX)</div>
-            <div class="headline"><span class="spacing price">1930₽↓</span><span class="change">−60. $23.29</span></div>
+            <div class="headline"><span class="spacing price">1930₽</span><span class="change green">+60</span></div>
         </div>
 
         <div class="card-content" id="card-forex">
             <div class="ticker">USD/RUB</div>
-            <div class="headline"><span class="spacing price">$82.86↓</span><span class="change">−1.86</span></div>
+            <div class="headline"><span class="spacing price">$82.86</span><span class="change green">−1.86</span></div>
         </div>
--->
+
     </div>
+    -->
     <div class="card">
         <div class="card-content" id="card-nasdaq">
             <div class="ticker"><span class="spacing">YNDX</span></div>
@@ -114,9 +126,21 @@
         </div>
 
     </div>
+
+
 </body>
 
 <script type="text/javascript">
+    const phone = 'https://source.unsplash.com/700x1624';
+    const desktop = 'https://source.unsplash.com/1920x1080';
+    const img = window.innerWidth <= 768 ? phone : desktop;
+
+    const image = new Image();
+    image.src = img;
+
+    image.onload = function (e) {
+        document.body.style.backgroundImage = `url(${img})`;
+    };
 
     const api_keys = [
         'ucNm3Bv41T4cZXmGpvvZjdBoC69664k6oKqaTmX2',
@@ -139,35 +163,38 @@
         const usd = forex.regularMarketPrice.toFixed(2);
 
         // nasdaq
-        let nasdaqArrow = nasdaq.regularMarketChange > 0 ? '↑' : '↓';
         let nasdaqPostfix = (nasdaq.regularMarketChange > 0 ? '+' : '') + nasdaq.regularMarketChange.toFixed(2).toString().replace('-', '−');
-        document.querySelector('#card-nasdaq .headline .price').innerHTML = `$${yndx + nasdaqArrow}`;
+        let nasdaqColor = nasdaq.regularMarketChange > 0 ? 'green' : 'red';
+        document.querySelector('#card-nasdaq .headline .price').innerHTML = `$${yndx}`;
         document.querySelector('#card-nasdaq .headline .change').innerHTML = nasdaqPostfix;
+        document.querySelector('#card-nasdaq .headline .change').className = 'change ' + nasdaqColor;
 
         // moex
-        let moexArrow = moex.regularMarketChange > 0 ? '↑' : '↓';
         let moexPostfix = (moex.regularMarketChange > 0 ? '+' : '') + moex.regularMarketChange.toFixed(0).toString().replace('-', '−');
-        document.querySelector('#card-moex .headline .price').innerHTML = `${yndxMe}₽${moexArrow}`;
+        let moexColor = moex.regularMarketChange > 0 ? 'green' : 'red';
+        document.querySelector('#card-moex .headline .price').innerHTML = `${yndxMe}₽`;
         document.querySelector('#card-moex .headline .change').innerHTML = moexPostfix;
+        document.querySelector('#card-moex .headline .change').className = 'change ' + moexColor;
 
         let clickState = 0;
         document.querySelector('#card-moex .headline .price').addEventListener('click', () => {
             if (clickState === 0) {
-                document.querySelector('#card-moex .headline .price').innerHTML = '$' + (yndxMe / usd).toFixed(2) + moexArrow;
+                document.querySelector('#card-moex .headline .price').innerHTML = '$' + (yndxMe / usd).toFixed(2);
                 document.querySelector('#card-moex .headline .change').innerHTML = (moex.regularMarketChange.toFixed(0) / usd).toFixed(2);
                 clickState = 1;
             } else {
-                document.querySelector('#card-moex .headline .price').innerHTML = `${yndxMe}₽${moexArrow}`;
+                document.querySelector('#card-moex .headline .price').innerHTML = `${yndxMe}₽$`;
                 document.querySelector('#card-moex .headline .change').innerHTML = moexPostfix;
                 clickState = 0;
             }
         }, false);
 
         // usdrub
-        let forexArrow = forex.regularMarketChange > 0 ? '↑' : '↓';
         let forexPostfix = (forex.regularMarketChange > 0 ? '+' : '') + forex.regularMarketChange.toFixed(2).toString().replace('-', '−');
-        document.querySelector('#card-forex .headline .price').innerHTML = `$${usd + forexArrow}`;
+        let forexColor = forex.regularMarketChange > 0 ? 'red' : 'green';
+        document.querySelector('#card-forex .headline .price').innerHTML = `$${usd}`;
         document.querySelector('#card-forex .headline .change').innerHTML = forexPostfix;
+        document.querySelector('#card-forex .headline .change').className = 'change ' + forexColor;
     }).catch(e => {
         console.error(e);
     });
