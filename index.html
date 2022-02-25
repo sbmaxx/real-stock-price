@@ -20,7 +20,7 @@
 
         .card {
             position: fixed;
-            background-image: url(https://source.unsplash.com/700x1624);
+            background-image: url(https://source.unsplash.com/1920x1080);
             background-size: cover;
             width: calc(100% - 10px);
             height: calc(100% - 10px);
@@ -36,8 +36,14 @@
         }
 
         .headline {
-            font-size: 20vw;
+            font-size: 18vh;
             font-weight: 100;
+        }
+
+        .change,
+        .price-usd {
+            font-size: 6vw;
+            padding-left: 10px;
         }
 
         .ticker {
@@ -47,6 +53,16 @@
         .spacing {
             letter-spacing: 4px;
         }
+
+        @media (min-width: 320px) and (max-width:768px) {
+            .card {
+                background-image: url(https://source.unsplash.com/700x1624);
+            }
+
+            .headline {
+                font-size: 16vw;
+            }
+        }
     </style>
 
 </head>
@@ -55,19 +71,20 @@
 
     <div class="card">
         <div class="card-content" id="card-nasdaq">
-            <div class="ticker">YNDX</div>
-            <div class="headline"></div>
+            <div class="ticker"><span class="spacing">YNDX</span></div>
+            <div class="headline"><span class="spacing price">$21.8</span><span class="change">+1.56</span></div>
         </div>
 
         <div class="card-content" id="card-moex">
             <div class="ticker">YNDX (MOEX)</div>
-            <div class="headline"></div>
+            <div class="headline"><span class="spacing price">1930₽</span><span class="change">+60</span></div>
         </div>
 
         <div class="card-content" id="card-forex">
             <div class="ticker">USD/RUB</div>
-            <div class="headline"></div>
+            <div class="headline"><span class="spacing price">$82.84</span><span class="change">−1.87</span></div>
         </div>
+
     </div>
 
 </body>
@@ -90,26 +107,27 @@
         const moex = data.quoteResponse.result[1];
         const forex = data.quoteResponse.result[2];
 
-        const yndx = nasdaq.regularMarketPrice;
+        const yndx = nasdaq.regularMarketPrice.toFixed(2);
         const yndxMe = moex.regularMarketPrice;
-        const usd = forex.regularMarketPrice;
+        const usd = forex.regularMarketPrice.toFixed(2);
 
         // nasdaq
         let nasdaqArrow = nasdaq.regularMarketChange > 0 ? '↑' : '↓';
         let nasdaqPostfix = (nasdaq.regularMarketChange > 0 ? '+' : '') + nasdaq.regularMarketChange.toFixed(2).toString().replace('-', '−');
-        document.querySelector('#card-nasdaq .ticker').innerHTML = `<span class="spacing">YNDX</span> —  <span class="spacing">$${nasdaq.regularMarketPrice + nasdaqArrow}, ${nasdaqPostfix}</span>`;
-        document.querySelector('#card-nasdaq .headline').innerHTML = Math.round(usd * yndx) + '<span style="font-weight: 100">₽</span>'
+        document.querySelector('#card-nasdaq .headline .price').innerHTML = `$${yndx + nasdaqArrow}`;
+        document.querySelector('#card-nasdaq .headline .change').innerHTML = nasdaqPostfix;
 
         // moex
         let moexArrow = moex.regularMarketChange > 0 ? '↑' : '↓';
-        let moexPostfix = (moex.regularMarketChange > 0 ? '+' : '') + moex.regularMarketChange.toFixed(2).toString().replace('-', '−');
-        document.querySelector('#card-moex .ticker').innerHTML = `<span class="spacing">YNDX (MOEX)</span> —  <span class="spacing">${moex.regularMarketPrice + '₽' + moexArrow}, ${moexPostfix}</span>`;
-        document.querySelector('#card-moex .headline').innerHTML = (yndxMe / usd).toFixed(2) + '<span style="font-weight: 100">$</span>'
+        let moexPostfix = (moex.regularMarketChange > 0 ? '+' : '') + moex.regularMarketChange.toFixed(0).toString().replace('-', '−');
+        document.querySelector('#card-moex .headline .price').innerHTML = `${yndxMe}₽${moexArrow}`;
+        document.querySelector('#card-moex .headline .change').innerHTML = moexPostfix + ', $' + (yndxMe / usd).toFixed(2) + '';
 
         // usdrub
         let forexArrow = forex.regularMarketChange > 0 ? '↑' : '↓';
         let forexPostfix = (forex.regularMarketChange > 0 ? '+' : '') + forex.regularMarketChange.toFixed(2).toString().replace('-', '−');
-        document.querySelector('#card-forex .ticker').innerHTML = `<span class="spacing">USD/RUB</span> —  <span class="spacing">$${forex.regularMarketPrice + forexArrow}, ${forexPostfix}</span>`;
+        document.querySelector('#card-forex .headline .price').innerHTML = `$${usd}`;
+        document.querySelector('#card-forex .headline .change').innerHTML = forexPostfix;
     }).catch(e => {
         console.error(e);
     });
