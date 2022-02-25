@@ -121,7 +121,7 @@
         let moexArrow = moex.regularMarketChange > 0 ? '↑' : '↓';
         let moexPostfix = (moex.regularMarketChange > 0 ? '+' : '') + moex.regularMarketChange.toFixed(0).toString().replace('-', '−');
         document.querySelector('#card-moex .headline .price').innerHTML = `${yndxMe}₽${moexArrow}`;
-        document.querySelector('#card-moex .headline .change').innerHTML = moexPostfix + ', $' + (yndxMe / usd).toFixed(2) + '';
+        document.querySelector('#card-moex .headline .change').innerHTML = moexPostfix + '. $' + (yndxMe / usd).toFixed(2) + '';
 
         // usdrub
         let forexArrow = forex.regularMarketChange > 0 ? '↑' : '↓';
