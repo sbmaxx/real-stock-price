@@ -103,7 +103,7 @@
         // moex
         let moexArrow = moex.regularMarketChange > 0 ? '↑' : '↓';
         let moexPostfix = (moex.regularMarketChange > 0 ? '+' : '') + moex.regularMarketChange.toFixed(2).toString().replace('-', '−');
-        document.querySelector('#card-moex .ticker').innerHTML = `<span class="spacing">YNDX (MOEX)</span> —  <span class="spacing">${moex.regularMarketPrice + moexArrow}₽, ${moexPostfix}</span>`;
+        document.querySelector('#card-moex .ticker').innerHTML = `<span class="spacing">YNDX (MOEX)</span> —  <span class="spacing">${moex.regularMarketPrice + '₽' + moexArrow}, ${moexPostfix}</span>`;
         document.querySelector('#card-moex .headline').innerHTML = (yndxMe / usd).toFixed(2) + '<span style="font-weight: 100">$</span>'
 
         // usdrub
