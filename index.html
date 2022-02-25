@@ -126,7 +126,7 @@
         // usdrub
         let forexArrow = forex.regularMarketChange > 0 ? '↑' : '↓';
         let forexPostfix = (forex.regularMarketChange > 0 ? '+' : '') + forex.regularMarketChange.toFixed(2).toString().replace('-', '−');
-        document.querySelector('#card-forex .headline .price').innerHTML = `$${usd}`;
+        document.querySelector('#card-forex .headline .price').innerHTML = `$${usd + forexArrow}`;
         document.querySelector('#card-forex .headline .change').innerHTML = forexPostfix;
     }).catch(e => {
         console.error(e);
