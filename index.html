@@ -27,14 +27,17 @@
 
         .card {
             box-sizing: border-box;
-            background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.1) 10%, rgba(0, 0, 0, 1) 100%);
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.3) 10%, rgba(0, 0, 0, 1) 100%);
             display: flex;
             width: 100%;
             flex-direction: column;
             justify-content: flex-end;
-            padding: 60px 10px 10px 10px;
+            padding: 100px 10px 10px 10px;
             bottom: 0;
             position: absolute;
+
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .card-content+.card-content {
@@ -169,8 +172,8 @@
 
     [].slice.apply($$('.price')).forEach(e => e.innerHTML = animateTemplate);
 
-    const phone = 'https://source.unsplash.com/700x1624';
-    const desktop = 'https://source.unsplash.com/1920x1080';
+    const phone = 'https://source.unsplash.com/780x1688';
+    const desktop = 'https://source.unsplash.com/2560x1600';
     const img = window.innerWidth <= 768 ? phone : desktop;
 
     const image = new Image();
