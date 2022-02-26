@@ -75,6 +75,38 @@
             color: #77dd77;
         }
 
+        .dot {
+            opacity: 0;
+            animation: dot 1.3s infinite;
+        }
+
+        .dot-one {
+            animation-delay: 0.0s;
+        }
+
+        .dot-two {
+            animation-delay: 0.2s;
+        }
+
+        .dot-three {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes dot {
+            0% {
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+
         @media (max-width:768px) {
             .headline {
                 font-size: 16vw;
@@ -131,6 +163,13 @@
 </body>
 
 <script type="text/javascript">
+    const $ = document.querySelector.bind(document);
+    const $$ = document.querySelectorAll.bind(document);
+
+    const animateTemplate = '<span class="dot dot-one">.</span><span class="dot dot-two">.</span><span class="dot dot-three">.</span>';
+
+    [].slice.apply($$('.price')).forEach(e => e.innerHTML = animateTemplate);
+
     const phone = 'https://source.unsplash.com/700x1624';
     const desktop = 'https://source.unsplash.com/1920x1080';
     const img = window.innerWidth <= 768 ? phone : desktop;
@@ -158,43 +197,58 @@
         const moex = data.quoteResponse.result[1];
         const forex = data.quoteResponse.result[2];
 
-        const yndx = nasdaq.regularMarketPrice.toFixed(2);
-        const yndxMe = moex.regularMarketPrice;
-        const usd = forex.regularMarketPrice.toFixed(2);
+        const nasdaqPrice = nasdaq.regularMarketPrice.toFixed(2);
+        const nasdaqChange = nasdaq.regularMarketChange.toFixed(2);
+
+        const moexPrice = moex.regularMarketPrice;
+        const moexChange = moex.regularMarketChange.toFixed(0);
+
+        const forexPrice = forex.regularMarketPrice.toFixed(2);
+        const forexChange = forex.regularMarketChange.toFixed(2);
 
         // nasdaq
-        let nasdaqPostfix = (nasdaq.regularMarketChange > 0 ? '+' : '') + nasdaq.regularMarketChange.toFixed(2).toString().replace('-', '−');
-        let nasdaqColor = nasdaq.regularMarketChange > 0 ? 'green' : 'red';
-        document.querySelector('#card-nasdaq .headline .price').innerHTML = `$${yndx}`;
-        document.querySelector('#card-nasdaq .headline .change').innerHTML = nasdaqPostfix;
-        document.querySelector('#card-nasdaq .headline .change').className = 'change ' + nasdaqColor;
+        let nasdaqPostfix = (nasdaqChange > 0 ? '+' : '') + nasdaqChange.toString().replace('-', '−');
+        let nasdaqColor = nasdaqChange > 0 ? 'green' : 'red';
+        let nasdaqContent = $ + nasdaqPrice;
+
+        $('#card-nasdaq .headline .price').innerHTML = nasdaqPrice;
+        $('#card-nasdaq .headline .change').innerHTML = nasdaqPostfix;
+        $('#card-nasdaq .headline .change').classList.add(nasdaqColor);
 
         // moex
-        let moexPostfix = (moex.regularMarketChange > 0 ? '+' : '') + moex.regularMarketChange.toFixed(0).toString().replace('-', '−');
-        let moexColor = moex.regularMarketChange > 0 ? 'green' : 'red';
-        document.querySelector('#card-moex .headline .price').innerHTML = `${yndxMe}₽`;
-        document.querySelector('#card-moex .headline .change').innerHTML = moexPostfix;
-        document.querySelector('#card-moex .headline .change').className = 'change ' + moexColor;
+        let moexPostfix = (moexChange > 0 ? '+' : '') + moexChange.toString().replace('-', '−');
+        let moexColor = moexChange > 0 ? 'green' : 'red';
+        let moexContent = moexPrice + '₽';
 
+        let moexUsdContent = '$' + (moexPrice / forexPrice).toFixed(2);
+        let moexUsdPostfix = (moexChange > 0 ? '+' : '') + (moexChange / forexPrice).toFixed(2).toString().replace('-', '−');;
+
+        $('#card-moex .headline .price').innerHTML = moexContent;
+        $('#card-moex .headline .change').innerHTML = moexPostfix;
+        $('#card-moex .headline .change').classList.add(moexColor);
+
+        // forex
         let clickState = 0;
         document.querySelector('#card-moex .headline .price').addEventListener('click', () => {
             if (clickState === 0) {
-                document.querySelector('#card-moex .headline .price').innerHTML = '$' + (yndxMe / usd).toFixed(2);
-                document.querySelector('#card-moex .headline .change').innerHTML = (moex.regularMarketChange.toFixed(0) / usd).toFixed(2);
+                $('#card-moex .headline .price').innerHTML = moexUsdContent;
+                $('#card-moex .headline .change').innerHTML = moexUsdPostfix;
                 clickState = 1;
             } else {
-                document.querySelector('#card-moex .headline .price').innerHTML = `${yndxMe}₽$`;
-                document.querySelector('#card-moex .headline .change').innerHTML = moexPostfix;
+                $('#card-moex .headline .price').innerHTML = moexContent;
+                $('#card-moex .headline .change').innerHTML = moexPostfix;
                 clickState = 0;
             }
         }, false);
 
         // usdrub
-        let forexPostfix = (forex.regularMarketChange > 0 ? '+' : '') + forex.regularMarketChange.toFixed(2).toString().replace('-', '−');
-        let forexColor = forex.regularMarketChange > 0 ? 'red' : 'green';
-        document.querySelector('#card-forex .headline .price').innerHTML = `$${usd}`;
-        document.querySelector('#card-forex .headline .change').innerHTML = forexPostfix;
-        document.querySelector('#card-forex .headline .change').className = 'change ' + forexColor;
+        let forexPostfix = (forexChange > 0 ? '+' : '') + forexChange.toString().replace('-', '−');
+        let forexColor = forexChange > 0 ? 'red' : 'green';
+        let forexContent = '$' + forexPrice;
+
+        $('#card-forex .headline .price').innerHTML = forexContent;
+        $('#card-forex .headline .change').innerHTML = forexPostfix;
+        $('#card-forex .headline .change').classList.add(forexColor);
     }).catch(e => {
         console.error(e);
     });
