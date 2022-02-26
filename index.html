@@ -211,7 +211,7 @@
         // nasdaq
         let nasdaqPostfix = (nasdaqChange > 0 ? '+' : '') + nasdaqChange.toString().replace('-', '−');
         let nasdaqColor = nasdaqChange > 0 ? 'green' : 'red';
-        let nasdaqContent = $ + nasdaqPrice;
+        let nasdaqContent = '$' + nasdaqPrice;
 
         $('#card-nasdaq .headline .price').innerHTML = nasdaqPrice;
         $('#card-nasdaq .headline .change').innerHTML = nasdaqPostfix;
