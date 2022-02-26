@@ -246,7 +246,7 @@
         // usdrub
         let forexPostfix = (forexChange > 0 ? '+' : '') + forexChange.toString().replace('-', '−');
         let forexColor = forexChange > 0 ? 'red' : 'green';
-        let forexContent = '$' + forexPrice;
+        let forexContent = forexPrice + '₽';
 
         $('#card-forex .headline .price').innerHTML = forexContent;
         $('#card-forex .headline .change').innerHTML = forexPostfix;
