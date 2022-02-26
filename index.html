@@ -213,7 +213,7 @@
         let nasdaqColor = nasdaqChange > 0 ? 'green' : 'red';
         let nasdaqContent = '$' + nasdaqPrice;
 
-        $('#card-nasdaq .headline .price').innerHTML = nasdaqPrice;
+        $('#card-nasdaq .headline .price').innerHTML = nasdaqContent;
         $('#card-nasdaq .headline .change').innerHTML = nasdaqPostfix;
         $('#card-nasdaq .headline .change').classList.add(nasdaqColor);
 
