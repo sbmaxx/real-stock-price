@@ -181,6 +181,7 @@
 
     image.onload = function (e) {
         document.body.style.backgroundImage = `url(${img})`;
+        document.body.classList.add('loaded');
     };
 
     const api_keys = [
